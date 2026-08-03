@@ -1,0 +1,13 @@
+Project overview
+
+This project builds a remote environmental monitoring system using an ESP32 microcontroller and a DHT22 temperature/humidity sensor, with live data pushed to a cloud dashboard via the Blynk IoT platform.
+
+How it works
+Sensing: The DHT22 sensor measures ambient temperature and humidity. It's wired to the ESP32's GPIO13 pin (data line), with power from the 3.3V rail and a pull-up resistor to keep the signal stable.
+Reading data: The ESP32 runs code that polls the DHT22 every 2.5 seconds using the Adafruit DHT library, which decodes the sensor's timing-based digital signal into readable temperature and humidity values.
+Connectivity: The ESP32 connects to WiFi (in Wokwi, the built-in Wokwi-Guest virtual network simulates real internet access) using its onboard WiFi module — no extra hardware needed.
+Cloud transmission: Using the Blynk library, the board authenticates with a unique token and sends the sensor readings to two virtual pins (V0 for temperature, V1 for humidity) on Blynk's cloud servers.
+Dashboard display: On the Blynk web or mobile dashboard, gauge/value widgets bound to those virtual pins update in real time, letting you monitor conditions remotely from any device — no need to be near the physical sensor.
+Why it's useful
+
+This kind of setup is a foundational building block for IoT applications like smart home climate control, greenhouse monitoring, server room environment tracking, or weather stations — anywhere you need to observe physical conditions remotely and potentially trigger automated responses (like turning on a fan or sending an alert) based on the readings.
