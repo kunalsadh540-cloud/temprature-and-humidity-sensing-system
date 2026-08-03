@@ -1,0 +1,56 @@
+#define BLYNK_TEMPLATE_ID "TMPL3KmfCvK7K"    // from Blynk.Cloud dashboard
+#define BLYNK_TEMPLATE_NAME "iotDHT22"
+#define BLYNK_AUTH_TOKEN "y4HFo3Ed5B_4S0Etq5T5yp8yFlDqylV7"        // from Blynk.Cloud device page
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <DHT.h>
+
+// ---------- Wi-Fi (Wokwi virtual network) ----------
+char ssid[] = "Wokwi-Guest";
+char pass[] = "";   // Wokwi's simulated network has no password
+
+// ---------- DHT22 configuration (matches your wiring) ----------
+#define DHTPIN 13       // Data wire on GPIO13 (MTCK)
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
+BlynkTimer timer;
+
+void sendSensorData() {
+  float humidity = dht.readHumidity();
+  float tempC = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(tempC)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %  |  Temperature: ");
+  Serial.print(tempC);
+  Serial.println(" °C");
+
+  // Push values to Blynk virtual pins
+  Blynk.virtualWrite(V0, tempC);
+  Blynk.virtualWrite(V1, humidity);
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  dht.begin();
+
+  Serial.println("Connecting to WiFi + Blynk...");
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, "blynk.cloud", 80);
+
+  // Send sensor data every 2.5 seconds (DHT22 min interval is 2s)
+  timer.setInterval(2500L, sendSensorData);
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
